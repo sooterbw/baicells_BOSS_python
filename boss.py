@@ -319,7 +319,7 @@ class BOSS:
             "status": r.status_code
         }
 
-    def modify_service_plan(self, service_id:str, service_plan_name:str, uplink:int, downlink:int) -> dict:
+    def modify_service_plan(self, service_plan_id:str, service_plan_name:str, uplink:int, downlink:int) -> dict:
         '''
         Updates service plan for all subscribers
         '''
@@ -328,7 +328,7 @@ class BOSS:
             headers = self.headers,
             json = {
                 'session_id': self.session_id,
-                'service_plan_id': service_id,
+                'service_plan_id': service_plan_id,
                 'service_plan_name': service_plan_name,
                 'uplink': uplink,
                 'downlink': downlink
