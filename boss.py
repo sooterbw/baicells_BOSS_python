@@ -1,5 +1,6 @@
 import requests
 from datetime import datetime
+from base64 import b64encode
 from typing import List
 
 class Subscriber:
@@ -13,10 +14,10 @@ class Subscriber:
         self.address = address
 
 class BOSS:
-    def __init__(self, api_key:str, cloud_key:str) -> None:
+    def __init__(self, username:str, password:str, cloud_key:str) -> None:
         self.headers = {
             "cloud_key": cloud_key,
-            "Authorization": api_key
+            "Authorization": b64encode(f"{username}:{password}".encode()).decode()
         }
         self.session_id = datetime.now().strftime('%Y%m%d%H')
         self.url = 'http://baiboss.cloudapp.net:47081/baicellsapi/'
@@ -129,7 +130,7 @@ class BOSS:
         }
         return data
 
-    def update_service_plan(self, service_plan_id:str, sub_id:str, imsi:int=0) -> dict:
+    def update_service_plan(self, service_plan_id:str, sub_id:str="", imsi:int=0) -> dict:
         '''
         Update service plan attached to subscriber's account
         '''
@@ -263,7 +264,7 @@ class BOSS:
         }
         return data
 
-    def update_sub(self, sub_name:int, id_num:int, phone_number=0, email="", address="", sub_id:str="", imsi=0) -> dict:
+    def update_sub(self, sub:Subscriber) -> dict:
         '''
         Update subscriber information
         '''
@@ -273,12 +274,12 @@ class BOSS:
             headers = self.headers,
             json = {
                 "session_id": self.session_id,
-                "sub_id": sub_id if sub_id else self.query_by_imsi(imsi)['data']['sub_id'],
-                "sub_name": sub_name,
-                "id_num": id_num,
-                "phone_number": phone_number,
-                "email": email,
-                "address": address
+                "sub_id": sub.sub_id if sub.sub_id else self.query_by_imsi(sub.imsi)['data']['sub_id'],
+                "sub_name": sub.sub_name,
+                "id_num": sub.id_num,
+                "phone_number": sub.phone_number,
+                "email": sub.email,
+                "address": sub.address
             }
         )
         data = {
